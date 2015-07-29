@@ -15,23 +15,21 @@
 #
 
 # Global variables
-GVM_SERVICE="http://api.gvmtool.net"
-GVM_BROKER_SERVICE="http://release.gvm.io"
-GVM_VERSION="2.4.2"
 GAG_DIR="$HOME/.grails-app-generator"
 
 # Local variables
 gag_bashrc="${HOME}/.bashrc"
 
 gag_init_snippet=$( cat << EOF
-	export GAG_DIR="$HOME/.grails-app-generator"
-	export PATH=$GAG_DIR/bin:$PATH
+
+export GAG_DIR="\$HOME/.grails-app-generator"
+export PATH=$GAG_DIR/bin:$PATH
 EOF
 )
 # Sanity checks
 
 echo "Looking for a previous installation of GAG..."
-if [ -d "${GVM_DIR}" ]; then
+if [ -d "${GAG_DIR}" ]; then
 	echo "GAG found."
 	echo ""
 	echo "======================================================================================================"
@@ -72,7 +70,8 @@ echo "Installing GAG scripts..."
 # Create directory structure
 
 echo "Create distribution directories..."
-mkdir -p "${GRAILS_APP_GENERATOR}"
+mkdir -p "${GAG_DIR}"
+git clone git@gitlab.intelligrape.net:bhagwat/grails-app-generator.git "${GAG_DIR}"
 
 if [ ! -f "${gag_bashrc}" ]; then
 	echo "#!/bin/bash" > "${gag_bashrc}"
@@ -87,5 +86,5 @@ fi
 
 echo -e "\n\n\nAll done!\n\n"
 
-echo "Please open a new terminal, or run the following in the existing one:"
+echo "Please open a new terminal"
 echo "Enjoy!!!"
