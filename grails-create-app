@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if [ "$#" -ne 2 ]; then
+    echo "Illegal number of arguements. "
+    echo ""
+    echo "Usage: grails-create-app grailsVersion appName"
+    echo "Example: grails-create-app 2.3.6 HelloWorld"
+    echo ""
+    exit
+fi
+
 #Location of createapp which in result is the actual git clone dir of this project
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CURRENT_DIR=`pwd`
@@ -8,10 +17,20 @@ GRAILS_VERSION=$1
 APP_NAME=$2
 
 TEMPLATE_NAME="template-${GRAILS_VERSION}"
+TEMPLATE_DIR=`echo $SCRIPT_DIR/$TEMPLATE_NAME | sed 's/\./-/g'`
+
+if [ ! -d "$TEMPLATE_DIR" ]; then
+  echo ""
+  echo "Sadly we are still working on template for grails version ${GRAILS_VERSION}."
+  echo "Contact me at bhagwat@intelligrape.com for further details"
+  echo "Thanks for your interest in grails-create-app utility."
+  echo ""
+  exit
+fi
+
 GIT_IGNORE_FILE="gitignore.text"
 APPLICATION_PROPERTIES="application.properties"
 
-TEMPLATE_DIR=`echo $SCRIPT_DIR/$TEMPLATE_NAME | sed 's/\./-/g'`
 APP_DIR="$CURRENT_DIR/$APP_NAME"
 
 DEV_DATABASE_NAME=`echo ${APP_NAME}_dev`
@@ -35,9 +54,18 @@ echo "$GRAILS_APP_CONFIG_RELATIVE_DIR/$APP_NAME-config.groovy">>"$APP_DIR/.gitig
 sed -i .bak "s|$TEMPLATE_NAME|$APP_NAME|" "$APP_DIR/$APPLICATION_PROPERTIES" \
 		&& rm "$APP_DIR/$APPLICATION_PROPERTIES.bak"
 #Change DATABASE_URL to local mysql database which needs to be created		
-sed -i .bak "s|DATABASE_URL|datbase="jdbc:mysql://localhost/${DEV_DATABASE_NAME}"|" \
+sed -i .bak "s|DATABASE_URL|jdbc:mysql://localhost/${DEV_DATABASE_NAME}|" \
 		"$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
-echo "App created successfully."
 
-echo "Make sure ${DEV_DATABASE_NAME} MySql database exists."
+#Change default package to com.ttnd.appName		
+sed -i .bak "s|DEFAULT_PACKAGE|com.ttn.${APP_NAME}|" \
+		"$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
+
+echo "Creating soft-link for external config file in HOME/.grails dir."
+if [ ! -f "$HOME/.grails/$APP_NAME-config.groovy" ] ; then
+	ln -s $APP_LOCAL_CONFIG_FILE_LOCATION "$HOME/.grails/$APP_NAME-config.groovy"
+fi
+
+echo "App created successfully. Make sure ${DEV_DATABASE_NAME} MySql database exists."
+
 echo "...."
