@@ -1,0 +1,132 @@
+#!/bin/bash
+#
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+if [ "$#" -ne 2 ]; then
+    echo "Illegal number of arguements. "
+    echo ""
+    echo "Usage: grails-create-app grailsVersion appName"
+    echo "Example: grails-create-app 2.3.6 HelloWorld"
+    echo ""
+    exit
+fi
+
+#Location of createapp which in result is the actual git clone dir of this project
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CURRENT_DIR=`pwd`
+
+GRAILS_VERSION=$1
+APP_NAME=$2
+
+HYPHENATED_GRAILS_VERSION=`echo $GRAILS_VERSION | sed 's/\./_/g'`
+
+TEMPLATE_NAME="template_${HYPHENATED_GRAILS_VERSION}"
+echo "using tempatename ${TEMPLATE_NAME}"
+TEMPLATE_DIR="$SCRIPT_DIR/$TEMPLATE_NAME"
+
+if [ ! -d "$TEMPLATE_DIR" ]; then
+  echo ""
+  echo "Sadly we are still working on template for grails version ${GRAILS_VERSION}."
+  echo "Contact me at bhagwat@intelligrape.com for further details"
+  echo "Thanks for your interest in grails-create-app utility."
+  echo ""
+  exit
+fi
+
+GIT_IGNORE_FILE="gitignore.text"
+APPLICATION_PROPERTIES="application.properties"
+
+APP_DIR="$CURRENT_DIR/$APP_NAME"
+
+DEV_DATABASE_NAME=`echo ${APP_NAME}_dev`
+LOCAL_CONFIG_FILE="local-config.groovy"
+GRAILS_APP_CONFIG_RELATIVE_DIR="grails-app/conf"
+GRAILS_CONFIG_DIR="$APP_DIR/$GRAILS_APP_CONFIG_RELATIVE_DIR" 
+APP_LOCAL_CONFIG_FILE_LOCATION="$GRAILS_CONFIG_DIR/$APP_NAME-config.groovy"
+
+
+echo "Creating application with name : $APP_NAME and Grails version : $GRAILS_VERSION"
+#Copy the template dir to the requested application named folder
+cp -r $TEMPLATE_DIR $APP_NAME
+#Copy .gitignore to application root dir
+cat "$SCRIPT_DIR/$GIT_IGNORE_FILE">"$APP_DIR/.gitignore"
+#Copy local-config.groovy which will override the config from Config.groovy
+#Currently it contains  MY_SQL username and password
+cat "$SCRIPT_DIR/$LOCAL_CONFIG_FILE">$APP_LOCAL_CONFIG_FILE_LOCATION
+#Ignore the local-config.groovy from git version control
+echo "$GRAILS_APP_CONFIG_RELATIVE_DIR/$APP_NAME-config.groovy">>"$APP_DIR/.gitignore"
+
+if  [[ $GRAILS_VERSION == 3* ]] ;
+then
+	######################Specific to Grails 3.x start ##############################
+	echo "Configuring Grails 3.x project"
+	#Change Proejct group name in build.gradle file		
+	sed -i .bak "s|${TEMPLATE_NAME}|${APP_NAME}|" \
+			"${APP_DIR}/build.gradle" && rm "${APP_DIR}/build.gradle.bak"
+
+	#Change default pacakge name in application.yml file		
+	sed -i .bak "s|${TEMPLATE_NAME}|'com.ttn.${APP_NAME}'|" \
+			"${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
+
+	#Change driver class name in application.yml file		
+	sed -i .bak "s|org.h2.Driver|com.mysql.jdbc.Driver|" \
+			"${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
+
+	#Change database username in application.yml file		
+	sed -i .bak "s|username: sa|username: root|" \
+			"${APP_DIR}/grails-app/conf/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
+
+	#Change database password in application.yml file		
+	sed -i .bak "s|password:|password: igdefault|" \
+			"${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
+
+	#Change database url in application.yml file		
+	sed -i .bak "s|jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE|jdbc:mysql://localhost/${DEV_DATABASE_NAME}|" \
+			"${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
+
+
+	#Move template_3_x folder to default package folder
+	#mv "${APP_DIR}/grails-app/init/${TEMPLATE_NAME}" "${APP_DIR}/grails-app/init/${$APP_NAME}" 
+	#Change package name in Application.groovy
+	#sed -i .bak "s|${TEMPLATE_NAME}|${APP_NAME}|" \
+	#		"${APP_DIR}/grails-app/init/${APP_NAME}/Application.groovy" && \
+	#		rm "${APP_DIR}/grails-app/init/${APP_NAME}/Application.groovy.bak"
+	######################Specific to Grails 3.x end ##############################
+else
+	######################Specific to Grails 2.x start ##############################
+	echo "Configuring Grails 2.x project"
+	#Change app.name property in application.properties file
+	sed -i .bak "s|$TEMPLATE_NAME|$APP_NAME|" "$APP_DIR/$APPLICATION_PROPERTIES" \
+			&& rm "$APP_DIR/$APPLICATION_PROPERTIES.bak"
+	#Change DATABASE_URL to local mysql database which needs to be created		
+	sed -i .bak "s|DATABASE_URL|jdbc:mysql://localhost/${DEV_DATABASE_NAME}|" \
+			"$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
+
+	#Change default package to com.ttnd.appName		
+	sed -i .bak "s|DEFAULT_PACKAGE|com.ttn.${APP_NAME}|" \
+			"$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
+
+	#Change Proejct name in .project file		
+	sed -i .bak "s|${TEMPLATE_NAME}|${APP_NAME}|" \
+			"${APP_DIR}/.project" && rm "${APP_DIR}/.project.bak"
+
+	echo "Creating soft-link for external config file in HOME/.grails dir."
+	ln -s $APP_LOCAL_CONFIG_FILE_LOCATION "$HOME/.grails/$APP_NAME-config.groovy"
+
+	######################Specific to Grails 2.x end ##############################
+fi
+
+echo "App created successfully. Make sure ${DEV_DATABASE_NAME} MySql database exists."
+
+echo "...."
