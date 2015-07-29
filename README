@@ -1,0 +1,4 @@
+Creates grails project with predefined template (file structure, dependencies, scripts etc) created by the Organisation
+
+Usage : grails-create-app grailsVersion appName
+Example: grails-create-app 2.3.6 helloApp
