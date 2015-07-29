@@ -2,3 +2,22 @@ Creates grails project with predefined template (file structure, dependencies, s
 
 Usage : grails-create-app grailsVersion appName
 Example: grails-create-app 2.3.6 helloApp
+
+Creaating Template for Grails 2.x 
+__________________
+
+1. Change Grails version to 2.x. Eg. gvm use grails 2.3.7
+2. grails create-app template-2-3-7 # prefix "tempalte-" grails version with . replaced by -
+3. Edit template-2-3-7/grails-app/conf/Config.groovy
+ Uncomment these to enable reading of external config file. External Config file will be copied to grails-app/conf dir which contains database realted configurations and default pacakage for artifacts. This file is added to .gitignore list so that your credetials are not pushed to git.
+
+grails.config.locations = [ "classpath:${appName}-config.properties",
+                             "classpath:${appName}-config.groovy",
+                             "file:${userHome}/.grails/${appName}-config.properties",
+                             "file:${userHome}/.grails/${appName}-config.groovy"]
+
+4. Edit template-2-3-7/grails-app/conf/Datasource.groovy Change driverClass like this:
+	driverClassName = 'com.mysql.jdbc.Driver'
+ Other details lilke username, password, database url etc are configured in external config file.
+
+ 5. Edit template-2-3-7/grails-app/conf/BuildConfig.groovy and uncommennt mysql jar dependency.
