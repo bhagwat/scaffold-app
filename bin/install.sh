@@ -38,10 +38,12 @@ if [ -d "${GAG_DIR}" ]; then
 	echo ""
 	echo "    ${GAG_DIR}"
 	echo ""
-	echo " Please consider running the following if you need to upgrade."
+	echo " Upgrading.... "
 	echo ""
-	echo "    $ cd $GAG_DIR; git pull origin master"
-	echo ""
+	cd $GAG_DIR;
+	git pull origin master
+	cd -
+	echo "Done upgrading"
 	echo "======================================================================================================"
 	echo ""
 	exit 0
