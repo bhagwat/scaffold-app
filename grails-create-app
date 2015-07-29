@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#Location of createapp which in result is the actual git clone dir of this project
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CURRENT_DIR=`pwd`
+
+GRAILS_VERSION=$1
+APP_NAME=$2
+
+TEMPLATE_NAME="template-${GRAILS_VERSION}"
+GIT_IGNORE_FILE="gitignore.text"
+APPLICATION_PROPERTIES="application.properties"
+
+TEMPLATE_DIR=`echo $SCRIPT_DIR/$TEMPLATE_NAME | sed 's/\./-/g'`
+APP_DIR="$CURRENT_DIR/$APP_NAME"
+
+DEV_DATABASE_NAME=`echo ${APP_NAME}_dev`
+LOCAL_CONFIG_FILE="local-config.groovy"
+GRAILS_APP_CONFIG_RELATIVE_DIR="grails-app/conf"
+GRAILS_CONFIG_DIR="$APP_DIR/$GRAILS_APP_CONFIG_RELATIVE_DIR" 
+APP_LOCAL_CONFIG_FILE_LOCATION="$GRAILS_CONFIG_DIR/$APP_NAME-config.groovy"
+
+
+echo "Creating application with name : $APP_NAME and Grails version : $GRAILS_VERSION"
+#Copy the template dir to the requested application named folder
+cp -r $TEMPLATE_DIR $APP_NAME
+#Copy .gitignore to application root dir
+cat "$SCRIPT_DIR/$GIT_IGNORE_FILE">"$APP_DIR/.gitignore"
+#Copy local-config.groovy which will override the config from Config.groovy
+#Currently it contains  MY_SQL username and password
+cat "$SCRIPT_DIR/$LOCAL_CONFIG_FILE">$APP_LOCAL_CONFIG_FILE_LOCATION
+#Ignore the local-config.groovy from git version control
+echo "$GRAILS_APP_CONFIG_RELATIVE_DIR/$APP_NAME-config.groovy">>"$APP_DIR/.gitignore"
+#Change app.name property in application.properties file
+sed -i .bak "s|$TEMPLATE_NAME|$APP_NAME|" "$APP_DIR/$APPLICATION_PROPERTIES" \
+		&& rm "$APP_DIR/$APPLICATION_PROPERTIES.bak"
+#Change DATABASE_URL to local mysql database which needs to be created		
+sed -i .bak "s|DATABASE_URL|datbase="jdbc:mysql://localhost/${DEV_DATABASE_NAME}"|" \
+		"$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
+echo "App created successfully."
+
+echo "Make sure ${DEV_DATABASE_NAME} MySql database exists."
+echo "...."
