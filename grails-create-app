@@ -16,8 +16,11 @@ CURRENT_DIR=`pwd`
 GRAILS_VERSION=$1
 APP_NAME=$2
 
-TEMPLATE_NAME="template-${GRAILS_VERSION}"
-TEMPLATE_DIR=`echo $SCRIPT_DIR/$TEMPLATE_NAME | sed 's/\./-/g'`
+HYPHENATED_GRAILS_VERSION=`echo $GRAILS_VERSION | sed 's/\./-/g'`
+
+TEMPLATE_NAME="template-${HYPHENATED_GRAILS_VERSION}"
+echo "tempatename ${TEMPLATE_NAME}"
+TEMPLATE_DIR="$SCRIPT_DIR/$TEMPLATE_NAME"
 
 if [ ! -d "$TEMPLATE_DIR" ]; then
   echo ""
@@ -60,6 +63,10 @@ sed -i .bak "s|DATABASE_URL|jdbc:mysql://localhost/${DEV_DATABASE_NAME}|" \
 #Change default package to com.ttnd.appName		
 sed -i .bak "s|DEFAULT_PACKAGE|com.ttn.${APP_NAME}|" \
 		"$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
+
+#Change Proejct name in .project file		
+sed -i .bak "s|${TEMPLATE_NAME}|${APP_NAME}|" \
+		"${APP_DIR}/.project" && rm "${APP_DIR}/.project.bak"
 
 echo "Creating soft-link for external config file in HOME/.grails dir."
 if [ ! -f "$HOME/.grails/$APP_NAME-config.groovy" ] ; then
