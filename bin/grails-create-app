@@ -23,9 +23,9 @@ if [ "$#" -ne 2 ]; then
 fi
 
 #Location of createapp which in result is the actual git clone dir of this project
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT_DIR="$( cd "$(dirname $( dirname "${BASH_SOURCE[0]}") )" && pwd )"
 CURRENT_DIR=`pwd`
-
+echo "script dir $SCRIPT_DIR"
 GRAILS_VERSION=$1
 APP_NAME=$2
 
