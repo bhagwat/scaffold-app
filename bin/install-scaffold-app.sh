@@ -15,32 +15,30 @@
 #
 
 # Global variables
-GAG_DIR="$HOME/.grails-app-generator"
+SCAFFOLD_APP_DIR="$HOME/.scaffold-app"
 
 # Local variables
-gag_bashrc="${HOME}/.bashrc"
+scaffold_app_bashrc="${HOME}/.bashrc"
 
-gag_init_snippet=$( cat << EOF
-
-export GAG_DIR="\$HOME/.grails-app-generator"
-export PATH=\$GAG_DIR/bin:\$PATH
+scaffold_app_init_snippet=$( cat << EOF
+export SCAFFOLD_APP_DIR="\$HOME/.scaffold-app"; export PATH=\$PATH:\$SCAFFOLD_APP_DIR/bin
 EOF
 )
 # Sanity checks
 
-echo "Looking for a previous installation of GAG..."
-if [ -d "${GAG_DIR}" ]; then
-	echo "GAG found."
+echo "Looking for a previous installation of scaffold-app..."
+if [ -d "${SCAFFOLD_APP_DIR}" ]; then
+	echo "scaffold-app found."
 	echo ""
 	echo "======================================================================================================"
-	echo " You already have GAG installed."
-	echo " GAG was found at:"
+	echo " You already have scaffold-app installed."
+	echo " scaffold-app was found at:"
 	echo ""
-	echo "    ${GAG_DIR}"
+	echo "    ${SCAFFOLD_APP_DIR}"
 	echo ""
 	echo " Upgrading.... "
 	echo ""
-	cd $GAG_DIR
+	cd $SCAFFOLD_APP_DIR
 	git pull origin master
 	cd -
 	echo "Done upgrading"
@@ -56,7 +54,7 @@ if [ -z $(which git) ]; then
 	echo "======================================================================================================"
 	echo " Please install git on your system using your favourite package manager."
 	echo ""
-	echo " GAG uses git to maintain templates and scripts"
+	echo " Scaffold-app uses git to maintain templates and scripts"
 	echo ""
 	echo " Restart after installing git."
 	echo "======================================================================================================"
@@ -71,7 +69,7 @@ if [ -z $(which sed) ]; then
 	echo "======================================================================================================"
 	echo " Please install sed on your system using your favourite package manager."
 	echo ""
-	echo " GAG uses sed extensively."
+	echo " Scaffold-app uses sed extensively."
 	echo ""
 	echo " Restart after installing sed."
 	echo "======================================================================================================"
@@ -80,28 +78,28 @@ if [ -z $(which sed) ]; then
 fi
 
 
-echo "Installing GAG scripts..."
-
+echo "Installing Scaffold-app scripts..."
 
 # Create directory structure
 
 echo "Create distribution directories..."
-mkdir -p "${GAG_DIR}"
-git clone git@gitlab.intelligrape.net:bhagwat/grails-app-generator.git "${GAG_DIR}"
+mkdir -p "${SCAFFOLD_APP_DIR}"
+git clone git@github.com:bhagwat/scaffold-app.git "${SCAFFOLD_APP_DIR}"
 
-echo "Configure PATH for GAG binaries"
-if [ ! -f "${gag_bashrc}" ]; then
-	echo "#!/bin/bash" > "${gag_bashrc}"
-	echo "${gag_init_snippet}" >> "${gag_bashrc}"
-	echo "Created and initialised ${gag_bashrc}"
+echo "Configure PATH for Scaffold-app shell scripts"
+if [ ! -f "${scaffold_app_bashrc}" ]; then
+	echo "#!/bin/bash" > "${scaffold_app_bashrc}"
+	echo "${scaffold_app_init_snippet}" >> "${scaffold_app_bashrc}"
+	echo "Created and initialised ${scaffold_app_bashrc}"
 else
-	if [[ -z `grep 'GAG_DIR' "${gag_bashrc}"` ]]; then
-		echo -e "\n${gag_init_snippet}" >> "${gag_bashrc}"
-		echo "Updated existing ${gag_bashrc}"
+	if [[ -z `grep 'SCAFFOLD_APP_DIR' "${scaffold_app_bashrc}"` ]]; then
+		echo -e "\n${scaffold_app_init_snippet}" >> "${scaffold_app_bashrc}"
+		echo "Updated existing ${scaffold_app_bashrc}"
 	fi
 fi
 
-echo -e "\n\n\nAll done!\n\n"
+echo -e "\nAll done!\n"
 
-echo "Please open a new terminal"
-echo "Enjoy!!!"
+echo "Make sure or add these exports in .bashrc or .profile file and open a new terminal"
+echo $scaffold_app_init_snippet
+echo -e "\nEnjoy!!!"
