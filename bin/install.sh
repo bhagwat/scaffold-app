@@ -23,7 +23,7 @@ gag_bashrc="${HOME}/.bashrc"
 gag_init_snippet=$( cat << EOF
 
 export GAG_DIR="\$HOME/.grails-app-generator"
-export PATH=$GAG_DIR/bin:$PATH
+export PATH=\$GAG_DIR/bin:\$PATH
 EOF
 )
 # Sanity checks
@@ -40,7 +40,7 @@ if [ -d "${GAG_DIR}" ]; then
 	echo ""
 	echo " Upgrading.... "
 	echo ""
-	cd $GAG_DIR;
+	cd $GAG_DIR
 	git pull origin master
 	cd -
 	echo "Done upgrading"
@@ -49,6 +49,20 @@ if [ -d "${GAG_DIR}" ]; then
 	exit 0
 fi
 
+echo "Looking for Git version control..."
+if [ -z $(which git) ]; then
+	echo "Not found."
+	echo ""
+	echo "======================================================================================================"
+	echo " Please install git on your system using your favourite package manager."
+	echo ""
+	echo " GAG uses git to maintain templates and scripts"
+	echo ""
+	echo " Restart after installing git."
+	echo "======================================================================================================"
+	echo ""
+	exit 0
+fi
 
 echo "Looking for sed..."
 if [ -z $(which sed) ]; then
@@ -75,6 +89,7 @@ echo "Create distribution directories..."
 mkdir -p "${GAG_DIR}"
 git clone git@gitlab.intelligrape.net:bhagwat/grails-app-generator.git "${GAG_DIR}"
 
+echo "Configure PATH for GAG binaries"
 if [ ! -f "${gag_bashrc}" ]; then
 	echo "#!/bin/bash" > "${gag_bashrc}"
 	echo "${gag_init_snippet}" >> "${gag_bashrc}"
