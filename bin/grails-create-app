@@ -14,24 +14,24 @@
 #   limitations under the License.
 #
 if [ "$#" -ne 2 ]; then
-    echo "Illegal number of arguements. "
-    echo ""
-    echo "Usage: grails-create-app grailsVersion appName"
-    echo "Example: grails-create-app 2.3.6 HelloWorld"
-    echo ""
-    exit
+  echo "Illegal number of arguements. "
+  echo ""
+  echo "Usage: grails-create-app grailsVersion appName"
+  echo "Example: grails-create-app 2.3.6 HelloWorld"
+  echo ""
+  exit
 fi
 
 #Location of createapp which in result is the actual git clone dir of this project
 SCRIPT_DIR="$( cd "$(dirname $( dirname "${BASH_SOURCE[0]}") )" && pwd )"
 CURRENT_DIR=`pwd`
-echo "script dir $SCRIPT_DIR"
+echo "Script dir home is : $SCRIPT_DIR"
 GRAILS_VERSION=$1
 APP_NAME=$2
 
-HYPHENATED_GRAILS_VERSION=`echo $GRAILS_VERSION | sed 's/\./_/g'`
+UNDERSCORED_GRAILS_VERSION=`echo $GRAILS_VERSION | sed 's/\./_/g'`
 
-TEMPLATE_NAME="template_${HYPHENATED_GRAILS_VERSION}"
+TEMPLATE_NAME="template_${UNDERSCORED_GRAILS_VERSION}"
 echo "using tempatename ${TEMPLATE_NAME}"
 TEMPLATE_DIR="$SCRIPT_DIR/$TEMPLATE_NAME"
 
@@ -69,64 +69,65 @@ echo "$GRAILS_APP_CONFIG_RELATIVE_DIR/$APP_NAME-config.groovy">>"$APP_DIR/.gitig
 
 if  [[ $GRAILS_VERSION == 3* ]] ;
 then
-	######################Specific to Grails 3.x start ##############################
-	echo "Configuring Grails 3.x project"
-	#Change Proejct group name in build.gradle file		
-	sed -i ".bak" "s|${TEMPLATE_NAME}|${APP_NAME}|" \
-			"${APP_DIR}/build.gradle" && rm "${APP_DIR}/build.gradle.bak"
+  ######################Specific to Grails 3.x start ##############################
+  echo "Configuring Grails 3.x project"
+  #Change Project group name in build.gradle file   
+  sed -i".bak" "s/${TEMPLATE_NAME}/${APP_NAME}/" \
+  "${APP_DIR}/build.gradle" && rm "${APP_DIR}/build.gradle.bak"
 
-	#Change default pacakge name in application.yml file		
-	sed -i ".bak" "s|${TEMPLATE_NAME}|'com.ttn.${APP_NAME}'|" \
-			"${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
+  #Change default pacakge name in application.yml file    
+  sed -i".bak" "s/${TEMPLATE_NAME}/'com.ttnd.${APP_NAME}'/" \
+  "${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
 
-	#Change driver class name in application.yml file		
-	sed -i ".bak" "s|org.h2.Driver|com.mysql.jdbc.Driver|" \
-			"${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
+  #Change driver class name in application.yml file   
+  sed -i".bak" "s/org.h2.Driver/com.mysql.jdbc.Driver/" \
+  "${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
 
-	#Change database username in application.yml file		
-	sed -i ".bak" "s|username: sa|username: root|" \
-			"${APP_DIR}/grails-app/conf/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
+  #Change database username in application.yml file   
+  sed -i".bak" "s/username: sa/username: root/" \
+  "${APP_DIR}/grails-app/conf/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
 
-	#Change database password in application.yml file		
-	sed -i ".bak" "s|password:|password: igdefault|" \
-			"${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
+  #Change database password in application.yml file   
+  sed -i".bak" "s/password:/password: abcde12345/" \
+  "${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
 
-	#Change database url in application.yml file		
-	sed -i ".bak" "s|jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE|jdbc:mysql://localhost/${DEV_DATABASE_NAME}|" \
-			"${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
+  #Change database url in application.yml file    
+  sed -i".bak" "s/jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE/jdbc:mysql:\/\/localhost\/${DEV_DATABASE_NAME}/" \
+  "${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
 
 
-	#Move template_3_x folder to default package folder
-	#mv "${APP_DIR}/grails-app/init/${TEMPLATE_NAME}" "${APP_DIR}/grails-app/init/${$APP_NAME}" 
-	#Change package name in Application.groovy
-	#sed -i .bak "s|${TEMPLATE_NAME}|${APP_NAME}|" \
-	#		"${APP_DIR}/grails-app/init/${APP_NAME}/Application.groovy" && \
-	#		rm "${APP_DIR}/grails-app/init/${APP_NAME}/Application.groovy.bak"
-	######################Specific to Grails 3.x end ##############################
+  #Move template_3_x folder to default package folder
+  #mv "${APP_DIR}/grails-app/init/${TEMPLATE_NAME}" "${APP_DIR}/grails-app/init/${$APP_NAME}" 
+  #Change package name in Application.groovy
+  #sed -i .bak "s|${TEMPLATE_NAME}|${APP_NAME}|" \
+  #   "${APP_DIR}/grails-app/init/${APP_NAME}/Application.groovy" && \
+  #   rm "${APP_DIR}/grails-app/init/${APP_NAME}/Application.groovy.bak"
+  ######################Specific to Grails 3.x end ##############################
 else
-	######################Specific to Grails 2.x start ##############################
-	echo "Configuring Grails 2.x project"
-	#Change app.name property in application.properties file
-	sed -i ".bak" "s|$TEMPLATE_NAME|$APP_NAME|" "$APP_DIR/$APPLICATION_PROPERTIES" \
-			&& rm "$APP_DIR/$APPLICATION_PROPERTIES.bak"
-	#Change DATABASE_URL to local mysql database which needs to be created		
-	sed -i ".bak" "s|DATABASE_URL|jdbc:mysql://localhost/${DEV_DATABASE_NAME}|" \
-			"$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
+  ######################Specific to Grails 2.x start ##############################
+  echo "Configuring Grails 2.x project"
+  #Change app.name property in application.properties file
+  # echo $TEMPLATE_NAME "--" $APP_NAME "--" $APP_DIR "--" $APPLICATION_PROPERTIES
+  #       template_2_3_6 -- helloApp    -- /home/manvendrask/Documents/work/intelligrape/helloApp -- application.properties
+  sed -i".bak" "s/$TEMPLATE_NAME/$APP_NAME/" "$APP_DIR/$APPLICATION_PROPERTIES" \
+  && rm "$APP_DIR/$APPLICATION_PROPERTIES.bak"
+  
+  #Change DATABASE_URL to local mysql database which needs to be created    
+  sed -i".bak" "s/DATABASE_URL/jdbc:mysql:\/\/localhost\/${DEV_DATABASE_NAME}/" \
+  "$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
 
-	#Change default package to com.ttnd.appName		
-	sed -i ".bak" "s|DEFAULT_PACKAGE|com.ttn.${APP_NAME}|" \
-			"$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
+  # Change default package to com.ttnd.appName    
+  sed -i".bak" "s/DEFAULT_PACKAGE/com.ttnd.${APP_NAME}/" \
+  "$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
 
-	#Change Proejct name in .project file		
-	sed -i ".bak" "s|${TEMPLATE_NAME}|${APP_NAME}|" \
-			"${APP_DIR}/.project" && rm "${APP_DIR}/.project.bak"
+  #Change Proejct name in .project file   TODO: add .project file from 2.3.6 project
+  sed -i".bak" "s/${TEMPLATE_NAME}/${APP_NAME}/" \
+  "${APP_DIR}/.project" && rm "${APP_DIR}/.project.bak"
 
-	echo "Creating soft-link for external config file in HOME/.grails dir."
-	ln -s $APP_LOCAL_CONFIG_FILE_LOCATION "$HOME/.grails/$APP_NAME-config.groovy"
+  # echo "Creating soft-link for external config file in HOME/.grails dir."
+  # ln -s $APP_LOCAL_CONFIG_FILE_LOCATION "$HOME/.grails/$APP_NAME-config.groovy"
 
-	######################Specific to Grails 2.x end ##############################
+  ######################Specific to Grails 2.x end ##############################
 fi
 
 echo "App created successfully. Make sure ${DEV_DATABASE_NAME} MySql database exists."
-
-echo "...."
