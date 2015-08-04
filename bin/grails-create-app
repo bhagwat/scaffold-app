@@ -14,7 +14,7 @@
 #   limitations under the License.
 #
 if [ "$#" -ne 2 ]; then
-  echo "Illegal number of arguements. "
+  echo "Illegal number of arguments. "
   echo ""
   echo "Usage: grails-create-app grailsVersion appName"
   echo "Example: grails-create-app 2.3.6 HelloWorld"
@@ -71,6 +71,7 @@ if  [[ $GRAILS_VERSION == 3* ]] ;
 then
   ######################Specific to Grails 3.x start ##############################
   echo "Configuring Grails 3.x project"
+
   #Change Project group name in build.gradle file   
   sed -i".bak" "s/${TEMPLATE_NAME}/${APP_NAME}/" \
   "${APP_DIR}/build.gradle" && rm "${APP_DIR}/build.gradle.bak"
@@ -96,19 +97,18 @@ then
   "${GRAILS_CONFIG_DIR}/application.yml" && rm "${GRAILS_CONFIG_DIR}/application.yml.bak"
 
 
-  #Move template_3_x folder to default package folder
-  #mv "${APP_DIR}/grails-app/init/${TEMPLATE_NAME}" "${APP_DIR}/grails-app/init/${$APP_NAME}" 
-  #Change package name in Application.groovy
-  #sed -i .bak "s|${TEMPLATE_NAME}|${APP_NAME}|" \
-  #   "${APP_DIR}/grails-app/init/${APP_NAME}/Application.groovy" && \
-  #   rm "${APP_DIR}/grails-app/init/${APP_NAME}/Application.groovy.bak"
+  #Move template_3_x folder to default package folder and  change package name in Application.groovy
+  mkdir -p $APP_DIR/grails-app/init/com/ttnd/
+  mv $APP_DIR/grails-app/init/$TEMPLATE_NAME $APP_DIR/grails-app/init/com/ttnd/$APP_NAME
+  sed -i".bak" "s/$TEMPLATE_NAME/com.ttnd.$APP_NAME/" \
+      "$APP_DIR/grails-app/init/com/ttnd/$APP_NAME/Application.groovy" && \
+      rm "$APP_DIR/grails-app/init/com/ttnd/$APP_NAME/Application.groovy.bak"
   ######################Specific to Grails 3.x end ##############################
 else
   ######################Specific to Grails 2.x start ##############################
   echo "Configuring Grails 2.x project"
+
   #Change app.name property in application.properties file
-  # echo $TEMPLATE_NAME "--" $APP_NAME "--" $APP_DIR "--" $APPLICATION_PROPERTIES
-  #       template_2_3_6 -- helloApp    -- /home/manvendrask/Documents/work/intelligrape/helloApp -- application.properties
   sed -i".bak" "s/$TEMPLATE_NAME/$APP_NAME/" "$APP_DIR/$APPLICATION_PROPERTIES" \
   && rm "$APP_DIR/$APPLICATION_PROPERTIES.bak"
   
