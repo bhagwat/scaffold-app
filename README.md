@@ -8,16 +8,16 @@ Creates grails project with predefined template (file structure, dependencies, s
 
 ## Creating Template for Grails 2.x 
 ### Clone this project and `cd TO_CLONED_DIR`
-#### Change Grails version to whatever version templte you want to create.
+#### Change Grails version to whatever version template you want to create.
 
 > Eg. gvm use grails 2.3.7
 
 #### grails create-app template_2_3_7 
 
-> ProjectName is important. It should be "tempalte_${version.replacAll('.', '_')}"
+> Project Name is important. It should be "tempalte_${version.replacAll('.', '_')}"
 
 #### Edit template_2_3_7/grails-app/conf/Config.groovy
- Uncomment these to enable reading of external config file. External Config file will be copied to grails-app/conf dir which contains database realted configurations and default pacakage for artifacts. This file is added to .gitignore list so that your credentials are not pushed to git.
+ Uncomment these to enable reading of external config file. External Config file will be copied to grails-app/conf dir which contains database related configurations and default pacakage for artifacts. This file is added to .gitignore list so that your credentials are not pushed to git.
 
 ```groovy
 grails.config.locations = [ "classpath:${appName}-config.properties",
