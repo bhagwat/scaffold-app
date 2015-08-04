@@ -49,7 +49,6 @@ fi
 
 echo "Looking for Git version control..."
 if [ -z $(which git) ]; then
-	echo "Not found."
 	echo ""
 	echo "======================================================================================================"
 	echo " Please install git on your system using your favourite package manager."
@@ -59,12 +58,11 @@ if [ -z $(which git) ]; then
 	echo " Restart after installing git."
 	echo "======================================================================================================"
 	echo ""
-	exit 0
+	exit 1
 fi
 
 echo "Looking for sed..."
 if [ -z $(which sed) ]; then
-	echo "Not found."
 	echo ""
 	echo "======================================================================================================"
 	echo " Please install sed on your system using your favourite package manager."
@@ -74,7 +72,7 @@ if [ -z $(which sed) ]; then
 	echo " Restart after installing sed."
 	echo "======================================================================================================"
 	echo ""
-	exit 0
+	exit 2
 fi
 
 
@@ -84,7 +82,7 @@ echo "Installing Scaffold-app scripts..."
 
 echo "Create distribution directories..."
 mkdir -p "${SCAFFOLD_APP_DIR}"
-git clone git@github.com:bhagwat/scaffold-app.git "${SCAFFOLD_APP_DIR}"
+git clone git@gitlab.intelligrape.net:bhagwat/grails-app-generator.git "${SCAFFOLD_APP_DIR}"
 
 echo "Configure PATH for Scaffold-app shell scripts"
 if [ ! -f "${scaffold_app_bashrc}" ]; then
@@ -98,7 +96,7 @@ else
 	fi
 fi
 
-echo -e "\nAll done!\n"
+echo -e "\nAll done! Cheers!\n"
 
 echo "Make sure or add these exports in .bashrc or .profile file and open a new terminal"
 echo $scaffold_app_init_snippet
