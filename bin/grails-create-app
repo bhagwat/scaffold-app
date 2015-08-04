@@ -53,7 +53,7 @@ DEV_DATABASE_NAME=`echo ${APP_NAME}_dev`
 LOCAL_CONFIG_FILE="local-config.groovy"
 GRAILS_APP_CONFIG_RELATIVE_DIR="grails-app/conf"
 GRAILS_CONFIG_DIR="$APP_DIR/$GRAILS_APP_CONFIG_RELATIVE_DIR" 
-APP_LOCAL_CONFIG_FILE_LOCATION="$GRAILS_CONFIG_DIR/$APP_NAME-config.groovy"
+APP_LOCAL_CONFIG_FILE_LOCATION="$APP_DIR/$APP_NAME-config.groovy"
 
 
 echo "Creating application with name : $APP_NAME and Grails version : $GRAILS_VERSION"
@@ -113,7 +113,7 @@ else
   && rm "$APP_DIR/$APPLICATION_PROPERTIES.bak"
   
   #Change DATABASE_URL to local mysql database which needs to be created    
-  sed -i".bak" "s/DATABASE_URL/jdbc:mysql:\/\/localhost\/${DEV_DATABASE_NAME}/" \
+  sed -i".bak" "s/DATABASE_URL/jdbc:mysql:\/\/localhost:3306\/${DEV_DATABASE_NAME}/" \
   "$APP_LOCAL_CONFIG_FILE_LOCATION" && rm "$APP_LOCAL_CONFIG_FILE_LOCATION.bak"
 
   # Change default package to com.ttnd.appName    
