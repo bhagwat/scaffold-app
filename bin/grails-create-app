@@ -13,11 +13,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-if [ "$#" -ne 2 ]; then
+if [ "$#" -lt 2 ]; then
   echo "Illegal number of arguments. "
   echo ""
   echo "Usage: grails-create-app grailsVersion appName"
-  echo "Example: grails-create-app 2.3.6 HelloWorld"
+  echo "Example: grails-create-app 2.3.6 HelloWorld [--security]"
   echo ""
   exit
 fi
@@ -32,7 +32,7 @@ APP_NAME=$2
 UNDERSCORED_GRAILS_VERSION=`echo $GRAILS_VERSION | sed 's/\./_/g'`
 
 TEMPLATE_NAME="template_${UNDERSCORED_GRAILS_VERSION}"
-echo "using tempatename ${TEMPLATE_NAME}"
+echo "Using template ${TEMPLATE_NAME}"
 TEMPLATE_DIR="$SCRIPT_DIR/$TEMPLATE_NAME"
 
 if [ ! -d "$TEMPLATE_DIR" ]; then
@@ -66,6 +66,19 @@ cat "$SCRIPT_DIR/$GIT_IGNORE_FILE">"$APP_DIR/.gitignore"
 cat "$SCRIPT_DIR/$LOCAL_CONFIG_FILE">$APP_LOCAL_CONFIG_FILE_LOCATION
 #Ignore the local-config.groovy from git version control
 echo "$GRAILS_APP_CONFIG_RELATIVE_DIR/$APP_NAME-config.groovy">>"$APP_DIR/.gitignore"
+
+ENABLE_GRAILS_SECURITY=$3
+if [ "$ENABLE_GRAILS_SECURITY" = "--security" ];
+then
+  echo "Configuring security for the app."
+  TEMPLATE_SECURITY_BASE="$SCRIPT_DIR/security/$TEMPLATE_NAME"
+  echo $TEMPLATE_SECURITY_BASE
+  cp -r $TEMPLATE_SECURITY_BASE/conf/ $APP_DIR/grails-app/
+  cp -r $TEMPLATE_SECURITY_BASE/controllers/ $APP_DIR/grails-app/
+  cp -r $TEMPLATE_SECURITY_BASE/domain/ $APP_DIR/grails-app/
+  cp -r $TEMPLATE_SECURITY_BASE/views/ $APP_DIR/grails-app/ 
+  echo "Security is configured." 
+fi
 
 if  [[ $GRAILS_VERSION == 3* ]] ;
 then
@@ -130,4 +143,4 @@ else
   ######################Specific to Grails 2.x end ##############################
 fi
 
-echo "App created successfully. Make sure ${DEV_DATABASE_NAME} MySql database exists."
+echo "App created successfully. Make sure ${DEV_DATABASE_NAME} exist in MySql database."

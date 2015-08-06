@@ -17,10 +17,12 @@ package com.ttnd
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.authentication.dao.NullSaltSource
 import groovy.text.SimpleTemplateEngine
+import org.springframework.security.access.annotation.Secured
 
 /**
  * @author <a href='mailto:burt@burtbeckwith.com'>Burt Beckwith</a>
  */
+@Secured('permitAll')
 class RegisterController extends AbstractS2UiController {
 
 	// override default value from base class
