@@ -17,6 +17,7 @@ package com.ttnd
 import javax.servlet.http.HttpServletResponse
 
 import org.springframework.security.access.annotation.Secured
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Secured('permitAll')
 class LogoutController {

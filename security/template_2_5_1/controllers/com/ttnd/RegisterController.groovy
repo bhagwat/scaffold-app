@@ -18,6 +18,8 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.authentication.dao.NullSaltSource
 import groovy.text.SimpleTemplateEngine
 import org.springframework.security.access.annotation.Secured
+import grails.plugin.springsecurity.ui.RegistrationCode
+import grails.plugin.springsecurity.ui.AbstractS2UiController
 
 /**
  * @author <a href='mailto:burt@burtbeckwith.com'>Burt Beckwith</a>

@@ -25,6 +25,7 @@ import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Secured('permitAll')
 class LoginController {

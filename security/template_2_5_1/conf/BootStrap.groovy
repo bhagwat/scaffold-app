@@ -1,3 +1,7 @@
+import com.ttnd.User
+import com.ttnd.Role
+import com.ttnd.UserRole
+
 class BootStrap {
 
     def init = { servletContext ->
