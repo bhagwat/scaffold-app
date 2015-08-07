@@ -68,7 +68,8 @@ cat "$SCRIPT_DIR/$LOCAL_CONFIG_FILE">$APP_LOCAL_CONFIG_FILE_LOCATION
 echo "$GRAILS_APP_CONFIG_RELATIVE_DIR/$APP_NAME-config.groovy">>"$APP_DIR/.gitignore"
 
 ENABLE_GRAILS_SECURITY=$3
-if [ "$ENABLE_GRAILS_SECURITY" = "--security" ];
+# Currently only configure security for grails 2.x
+if [[ "$ENABLE_GRAILS_SECURITY" = "--security" && $GRAILS_VERSION == 2* ]];
 then
   echo "Configuring security for the app."
   TEMPLATE_SECURITY_BASE="$SCRIPT_DIR/security/$TEMPLATE_NAME"
