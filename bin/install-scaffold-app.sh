@@ -91,13 +91,21 @@ if [ ! -f "${scaffold_app_bashrc}" ]; then
 	echo "Created and initialised ${scaffold_app_bashrc}"
 else
 	if [[ -z `grep 'SCAFFOLD_APP_DIR' "${scaffold_app_bashrc}"` ]]; then
-		echo -e "\n${scaffold_app_init_snippet}" >> "${scaffold_app_bashrc}"
+		GVM_LINE_NUMBER=`grep -n '.gvm/bin' $scaffold_app_bashrc | cut -d':' -f 1`
+		if [ "$GVM_LINE_NUMBER" != "" ];
+		then
+			APPEND_AFTER_LINE=$(($GVM_LINE_NUMBER - 2))
+			sed -i".bak" "${APPEND_AFTER_LINE}a ${scaffold_app_init_snippet}" "${scaffold_app_bashrc}" && \
+				rm "${scaffold_app_bashrc}.bak"
+		else
+			echo -e "\n${scaffold_app_init_snippet}" >> "${scaffold_app_bashrc}"			
+		fi	
 		echo "Updated existing ${scaffold_app_bashrc}"
 	fi
 fi
 
 echo -e "\nAll done! Cheers!\n"
 
-echo "Make sure or add these exports in .bashrc or .profile file and open a new terminal"
+echo "Make sure/add following exports in your .bashrc or .profile file and open a new terminal."
 echo $scaffold_app_init_snippet
 echo -e "\nEnjoy!!!"
