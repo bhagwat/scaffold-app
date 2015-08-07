@@ -41,6 +41,7 @@ class RegisterController extends AbstractS2UiController {
 		def copy = [:] + (flash.chainedParams ?: [:])
 		copy.remove 'controller'
 		copy.remove 'action'
+		copy.remove 'format'
 		[command: new RegisterCommand(copy)]
 	}
 

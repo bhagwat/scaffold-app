@@ -116,10 +116,26 @@ log4j.main = {
            'net.sf.ehcache.hibernate'
 }
 
-// === Spring Security configuration
+// === Mail configuration ===
+grails {
+   mail {
+     host = "smtp.gmail.com"
+     port = 465
+     username = "youracount@gmail.com"
+     password = "yourpassword"
+     props = ["mail.smtp.auth":"true",                     
+              "mail.smtp.socketFactory.port":"465",
+              "mail.smtp.socketFactory.class":"javax.net.ssl.SSLSocketFactory",
+              "mail.smtp.socketFactory.fallback":"false"]
+
+   }
+}
+
+// === Spring Security configuration ===
 // Uncomment following to use optimistic approach for security. Not recommended though!
 // grails.plugin.springsecurity.rejectIfNoRule = false
 // grails.plugin.springsecurity.fii.rejectPublicInvocations = false
+grails.plugin.springsecurity.userLookup.usernamePropertyName = 'email'
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.ttnd.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.ttnd.UserRole'
 grails.plugin.springsecurity.authority.className = 'com.ttnd.Role'
